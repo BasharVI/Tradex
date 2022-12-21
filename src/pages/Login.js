@@ -5,14 +5,13 @@ const Login = () => {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
 
-  const users = { email: "abc@gmail.com", password: "test" };
+  const users = JSON.parse(localStorage.getItem("user"));
 
   const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
     if (users.email === email && users.password === password) {
       console.log("user logged in");
-      localStorage.setItem("user", "Bashar");
       navigate("/dashboard");
     } else {
       console.log("wrong credentials");

@@ -1,22 +1,28 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const loggedInUser = localStorage.getItem("user");
+  const navigate = useNavigate();
+
+  const logout = (e) => {
+    e.preventDefault();
+    localStorage.clear();
+    navigate("/login");
+  };
+
+  const loggedInUser = JSON.parse(localStorage.getItem("user"));
   return (
     <div className="header">
       <ul>
         <li>
           {loggedInUser ? (
-            <Link to="/logout">Log out</Link>
+            <Link onClick={logout}>Log out</Link>
           ) : (
             <Link to="/login">Login</Link>
           )}
         </li>
-        <li>
-          <Link to="/signup">SignUp</Link>
-        </li>
-        <li>{loggedInUser}</li>
+        <li>{loggedInUser ? <div></div> : <Link to="/signup">SignUp</Link>}</li>
+        <li>{loggedInUser ? loggedInUser.username : <div></div>}</li>
       </ul>
     </div>
   );
