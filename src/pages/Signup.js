@@ -3,17 +3,17 @@ import React from "react";
 const Signup = () => {
   return (
     <div className="signup-page">
-      <h3>Create new account</h3>
       <form>
-        <label className="label" for="userName">
+        <h3>Create new account</h3>
+        <label className="label" htmlFor="userName">
           User Name
         </label>
         <input className="input" type="text" placeholder="User Name" />
-        <label className="label" for="email">
+        <label className="label" htmlFor="email">
           Email
         </label>
         <input className="input" type="email" placeholder="Email" />
-        <label className="label" for="password">
+        <label className="label" htmlFor="password">
           Password
         </label>
         <input className="input" type="password" placeholder="Password" />

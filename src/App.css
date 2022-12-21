@@ -28,19 +28,74 @@ a {
   width: 100%;
   height: 35px;
 }
+
+/* Signup Page Styles  */
+
 .input {
-  background-color: aqua;
+  background-color: rgb(207, 243, 186);
   height: 35px;
+  width: 100%;
+  margin-bottom: 15px;
+  border: 1px solid gray;
+  border-radius: 15px;
+  padding: 15px;
+}
+.input:focus {
+  outline: 1px solid rgb(192, 245, 187);
+  background-color: rgb(249, 250, 252);
 }
 .label {
-  color: black;
+  color: rgb(0, 0, 0);
   display: block;
-  padding: 5px;
+  text-align: left;
+  margin-bottom: 8px;
 }
 .btn {
-  background-color: #3bb911;
+  background-color: rgb(192, 245, 187);
   width: 70px;
   height: 35px;
-  display: block;
   margin: 20px;
+}
+.signup-page {
+  border: 1px solid black;
+  border-radius: 15px;
+  padding: 3.5%;
+  display: flex;
+  margin: auto;
+  margin-top: 25px;
+  width: 50%;
+  box-shadow: 10px 10px rgb(185, 187, 185);
+  text-align: center;
+}
+.signup-page h3 {
+  margin-bottom: 30px;
+  margin-top: 20px;
+}
+.signup-page form {
+  margin: auto;
+  width: 100%;
+}
+
+/* Login Page Styles  */
+
+.login-page {
+  border: 1px solid black;
+  border-radius: 15px;
+  padding: 3.5%;
+  display: flex;
+  margin: auto;
+  margin-top: 25px;
+  width: 50%;
+  box-shadow: 10px 10px rgb(185, 187, 185);
+  text-align: center;
+}
+
+.login-page form {
+  margin: auto;
+  width: 100%;
+}
+
+.login-page h3 {
+  margin-bottom: 30px;
+  margin-top: 20px;
 }
