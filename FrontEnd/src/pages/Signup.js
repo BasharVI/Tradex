@@ -7,16 +7,31 @@ const Signup = () => {
   const [password, setpassword] = useState("");
 
   const navigate = useNavigate();
-  const handleSubmit = (e) => {
+
+  const collectData = async (e) => {
     e.preventDefault();
-    const newuser = { username: username, email: email, password: password };
-    localStorage.setItem("user", JSON.stringify(newuser));
+    let result = await fetch("http://localhost:5000/signup", {
+      method: "post",
+      body: JSON.stringify({ username, email, password }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    result = await result.json();
+    console.log(result);
     navigate("/dashboard");
   };
 
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   const newuser = { username: username, email: email, password: password };
+  //   localStorage.setItem("user", JSON.stringify(newuser));
+  //   navigate("/dashboard");
+  // };
+
   return (
     <div className="signup-page">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={collectData}>
         <h3>Create new account</h3>
         <label className="label" htmlFor="userName">
           User Name

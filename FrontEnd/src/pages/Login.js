@@ -1,26 +1,26 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
 
-  const users = JSON.parse(localStorage.getItem("user"));
+  // const users = JSON.parse(localStorage.getItem("user"));
 
-  const navigate = useNavigate();
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (users.email === email && users.password === password) {
-      navigate("/dashboard");
-    } else {
-      console.log("wrong credentials");
-      navigate("/login");
-    }
-  };
+  // const navigate = useNavigate();
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (users.email === email && users.password === password) {
+  //     navigate("/dashboard");
+  //   } else {
+  //     console.log("wrong credentials");
+  //     navigate("/login");
+  //   }
+  // };
 
   return (
     <div className="login-page">
-      <form onSubmit={handleSubmit}>
+      <form>
         <h3>Login</h3>
         <label className="label" htmlFor="email">
           Email
@@ -39,6 +39,7 @@ const Login = () => {
           className="input"
           type="password"
           placeholder="Password"
+          value={password}
           onChange={(e) => setpassword(e.target.value)}
         />
         <button className="btn" type="submit">
