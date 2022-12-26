@@ -9,10 +9,25 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// Signup
 app.post("/signup", async (req, res) => {
   let user = new User(req.body);
   let result = await user.save();
   res.send(result);
+});
+
+// Login
+app.post("/login", async (req, res) => {
+  if (req.body.password && req.body.email) {
+    let user = await User.findOne(req.body).select("-password");
+    if (user) {
+      res.send(user);
+    } else {
+      res.send({ result: "No User found" });
+    }
+  } else {
+    res.send({ result: "No result" });
+  }
 });
 
 // Port connection

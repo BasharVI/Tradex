@@ -14,6 +14,9 @@ const Header = () => {
   return (
     <div className="header">
       <ul>
+        <li>{loggedInUser ? <Link>Dashboard</Link> : null}</li>
+        <li>{loggedInUser ? <Link>Portfolio</Link> : null}</li>
+
         <li>
           {loggedInUser ? (
             <Link onClick={logout}>Log out</Link>
@@ -21,8 +24,13 @@ const Header = () => {
             <Link to="/login">Login</Link>
           )}
         </li>
-        <li>{loggedInUser ? null : <Link to="/signup">SignUp</Link>}</li>
-        <li>{loggedInUser ? loggedInUser.username : null}</li>
+        <li>
+          {loggedInUser ? (
+            loggedInUser.username
+          ) : (
+            <Link to="/signup">SignUp</Link>
+          )}
+        </li>
       </ul>
     </div>
   );

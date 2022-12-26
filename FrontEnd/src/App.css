@@ -9,6 +9,7 @@ a {
   text-decoration: none;
 }
 
+/* Header Styles */
 .header {
   background-color: #a0dd8c;
   width: 100%;
@@ -126,4 +127,10 @@ a {
 }
 .stock-list:hover {
   scale: 1.1;
+}
+
+/* Footer Styles */
+
+.footer {
+  margin-top: 10px;
 }
