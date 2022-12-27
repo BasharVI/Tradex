@@ -3,33 +3,39 @@ import React from "react";
 const Watchlist = () => {
   return (
     <div className="watchlist">
+      <div className="search">
+        <input type="search" placeholder="Search stocks Eg:TATASTEEL "></input>
+      </div>
+
       <div className="stock-list">
-        TATAMOTOR
+        <h4>TATAMOTOR</h4>
         <span>BUY/SELL</span>
       </div>
       <div className="stock-list">
-        RELIANCE <span>BUY/SELL</span>
+        <h4>RELIANCE </h4>
+        <span>BUY/SELL</span>
       </div>
       <div className="stock-list">
-        TATASTEEL <span>BUY/SELL</span>
+        <h4>TATASTEEL</h4> <span>BUY/SELL</span>
       </div>
       <div className="stock-list">
-        HDFCBANK <span>BUY/SELL</span>
+        <h4>HDFCBANK </h4>
+        <span>BUY/SELL</span>
       </div>
       <div className="stock-list">
-        SBIN <span>BUY/SELL</span>
+        <h4>SBIN</h4> <span>BUY/SELL</span>
       </div>
       <div className="stock-list">
-        HINDUNILVR <span>BUY/SELL</span>
+        <h4>HINDUNILVR</h4> <span>BUY/SELL</span>
       </div>
       <div className="stock-list">
-        JSWSTEEL <span>BUY/SELL</span>
+        <h4>JSWSTEEL</h4> <span>BUY/SELL</span>
       </div>
       <div className="stock-list">
-        TATACONSUM <span>BUY/SELL</span>
+        <h4>TATACONSUM</h4> <span>BUY/SELL</span>
       </div>
       <div className="stock-list">
-        ADANIPORT <span>BUY/SELL</span>
+        <h4>ADANIPORT</h4> <span>BUY/SELL</span>
       </div>
     </div>
   );

@@ -14,8 +14,9 @@ const Header = () => {
   return (
     <div className="header">
       <ul>
-        <li>{loggedInUser ? <Link>Dashboard</Link> : null}</li>
-        <li>{loggedInUser ? <Link>Portfolio</Link> : null}</li>
+        <li>{loggedInUser ? <Link to="/dashboard">Dashboard</Link> : null}</li>
+        <li>{loggedInUser ? <Link to="/portfolio">Portfolio</Link> : null}</li>
+        <li>{loggedInUser ? <Link to="/orders">Orders</Link> : null}</li>
 
         <li>
           {loggedInUser ? (

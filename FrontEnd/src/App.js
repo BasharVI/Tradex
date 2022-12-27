@@ -7,6 +7,8 @@ import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import PrivateComponent from "./components/PrivateComponent";
+import Portfolio from "./components/Portfolio";
+import Orders from "./components/Orders";
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
           <Route element={<PrivateComponent />}>
             <Route exact path="/" element={<HomePage />}></Route>
             <Route path="dashboard" element={<Dashboard />}></Route>
+            <Route path="Portfolio" element={<Portfolio />}></Route>
+            <Route path="orders" element={<Orders />}></Route>
           </Route>
           <Route path="signup" element={<Signup />}></Route>
           <Route path="login" element={<Login />}></Route>
