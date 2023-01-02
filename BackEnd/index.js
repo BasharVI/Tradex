@@ -1,6 +1,7 @@
 const express = require("express");
 const User = require("./db/User");
 const cors = require("cors");
+
 require("./db/config");
 
 const app = express();
@@ -29,6 +30,8 @@ app.post("/login", async (req, res) => {
     res.send({ result: "No result" });
   }
 });
+
+// Search endpoint
 
 // Port connection
 app.listen(5000, () => {

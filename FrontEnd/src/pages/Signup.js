@@ -29,13 +29,6 @@ const Signup = () => {
     navigate("/dashboard");
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   const newuser = { username: username, email: email, password: password };
-  //   localStorage.setItem("user", JSON.stringify(newuser));
-  //   navigate("/dashboard");
-  // };
-
   return (
     <div className="signup-page">
       <form onSubmit={collectData}>

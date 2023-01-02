@@ -142,7 +142,7 @@ a {
   justify-content: space-between;
 }
 .stock-list h4 {
-  transition: 0.75s;
+  transition: 0.5s;
 }
 .stock-list span {
   color: #2b880d;

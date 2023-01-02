@@ -1,41 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Watchlist = () => {
+  const [searchData, setsearchData] = useState([]);
+
+  const handleSearch = async (e) => {
+    if (e.key === "Enter") {
+      let searchWord = e.target.value;
+      let result = await fetch(
+        `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${searchWord}&apikey=UOASVEI0FTZC73M8`
+      );
+      result = await result.json();
+      console.log(result.bestMatches);
+      setsearchData(result.bestMatches);
+    }
+  };
+
   return (
     <div className="watchlist">
       <div className="search">
-        <input type="search" placeholder="Search stocks Eg:TATASTEEL "></input>
-      </div>
-
-      <div className="stock-list">
-        <h4>TATAMOTOR</h4>
-        <span>BUY/SELL</span>
-      </div>
-      <div className="stock-list">
-        <h4>RELIANCE </h4>
-        <span>BUY/SELL</span>
-      </div>
-      <div className="stock-list">
-        <h4>TATASTEEL</h4> <span>BUY/SELL</span>
-      </div>
-      <div className="stock-list">
-        <h4>HDFCBANK </h4>
-        <span>BUY/SELL</span>
-      </div>
-      <div className="stock-list">
-        <h4>SBIN</h4> <span>BUY/SELL</span>
-      </div>
-      <div className="stock-list">
-        <h4>HINDUNILVR</h4> <span>BUY/SELL</span>
-      </div>
-      <div className="stock-list">
-        <h4>JSWSTEEL</h4> <span>BUY/SELL</span>
-      </div>
-      <div className="stock-list">
-        <h4>TATACONSUM</h4> <span>BUY/SELL</span>
-      </div>
-      <div className="stock-list">
-        <h4>ADANIPORT</h4> <span>BUY/SELL</span>
+        <input
+          type="search"
+          placeholder="Search stocks Eg:GOOGL "
+          onKeyDown={handleSearch}
+        ></input>
+        {searchData.map((data) => {
+          return (
+            <div className="stock-list">
+              <h4>{Object.values(data)[0]}</h4>
+              <span>{Object.values(data)[1]}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
