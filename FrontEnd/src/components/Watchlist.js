@@ -23,9 +23,9 @@ const Watchlist = () => {
           placeholder="Search stocks Eg:GOOGL "
           onKeyDown={handleSearch}
         ></input>
-        {searchData.map((data) => {
+        {searchData.map((data, index) => {
           return (
-            <div className="stock-list">
+            <div className="stock-list" key={index + 1}>
               <h4>{Object.values(data)[0]}</h4>
               <span>{Object.values(data)[1]}</span>
             </div>

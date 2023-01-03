@@ -154,10 +154,60 @@ a {
 
 /* portfolio style */
 
-.portfolio h2 {
-  float: right;
-  margin-top: 25%;
-  margin-right: 25%;
+.portfolio {
+  display: flex;
+  justify-content: flex-start;
+}
+.portfolio-details h2 {
+  display: block;
+  text-align: center;
+}
+.portfolio-details table {
+  width: 1000px;
+  margin: 25px;
+  justify-content: start;
+  text-align: center;
+}
+
+.portfolio-details table tr {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.portfolio-details table tr th {
+  padding: 25px;
+}
+.portfolio-details tr td {
+  padding: 25px;
+}
+
+/* order page style */
+
+.orders {
+  display: flex;
+  justify-content: flex-start;
+}
+.orders-details h2 {
+  display: block;
+  text-align: center;
+}
+.orders-details table {
+  width: 1000px;
+  margin: 25px;
+  justify-content: start;
+  text-align: center;
+}
+
+.orders-details table tr {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.orders-details table tr th {
+  padding: 25px;
+}
+.orders-details tr td {
+  padding: 25px;
 }
 
 /* Footer Styles */
