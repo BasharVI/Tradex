@@ -3,7 +3,6 @@ import Watchlist from "../components/Watchlist";
 
 const Dashboard = () => {
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
-  console.log(loggedInUser.username);
   return (
     <div className="dashboard">
       <Watchlist />

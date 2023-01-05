@@ -17,11 +17,11 @@ function App() {
         <Header />
         <Routes>
           <Route element={<PrivateComponent />}>
-            <Route exact path="/" element={<HomePage />}></Route>
             <Route path="dashboard" element={<Dashboard />}></Route>
             <Route path="Portfolio" element={<Portfolio />}></Route>
             <Route path="orders" element={<Orders />}></Route>
           </Route>
+          <Route exact path="/" element={<HomePage />}></Route>
           <Route path="signup" element={<Signup />}></Route>
           <Route path="login" element={<Login />}></Route>
         </Routes>

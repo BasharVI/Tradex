@@ -31,8 +31,6 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Search endpoint
-
 // Port connection
 app.listen(5000, () => {
   console.log("server listening to port 5000");

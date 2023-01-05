@@ -23,7 +23,6 @@ const Login = () => {
       },
     });
     result = await result.json();
-    console.log(result);
     if (result.username) {
       localStorage.setItem("user", JSON.stringify(result));
       navigate("/dashboard");
