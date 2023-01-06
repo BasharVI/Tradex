@@ -2,8 +2,8 @@ import React, { useState } from "react";
 
 const Watchlist = () => {
   const [searchData, setsearchData] = useState([]);
-  const [stockPrice, setstockPrice] = useState([]);
   const [stockName, setstockName] = useState([]);
+
   const handleSearch = async (e) => {
     if (e.key === "Enter") {
       const searchWord = e.target.value;
@@ -11,7 +11,11 @@ const Watchlist = () => {
         `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${searchWord}&apikey=UOASVEI0FTZC73M8`
       );
       result = await result.json();
-      setsearchData(result.bestMatches);
+      if (searchWord === "") {
+        setsearchData([]);
+      } else {
+        setsearchData(result.bestMatches);
+      }
     }
   };
 
@@ -34,47 +38,42 @@ const Watchlist = () => {
         return null;
       }
     });
-    // let action = await fetch("localhost:5000/watchlist", {
-    //   method: "post",
-    //   body: JSON.stringify({ symbol, LTP }),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // });
-
-    // action = await action.json();
-    // console.log(action);
-    setstockName(symbol);
-    setstockPrice(LTP);
-    // console.log(LTP);
-    // console.log(symbol);
+    setsearchData([]);
+    let inputField = document.querySelector(".inputfield");
+    inputField.value = "";
+    setstockName([{ stock: symbol, price: LTP }, ...stockName]);
   };
 
   return (
     <div className="watchlist">
       <div className="search">
         <input
+          className="inputfield"
           type="search"
           placeholder="Search stocks Eg:GOOGL "
           onKeyDown={handleSearch}
         ></input>
-        {searchData.map((data, index) => {
-          return (
-            <form key={index + 1} onSubmit={addToWatchlist}>
-              <div className="search-list">
-                <h4>{Object.values(data)[0]}</h4>
-                <span>{Object.values(data)[1]}</span>
-                <button type="submit">+</button>
-              </div>
-            </form>
-          );
-        })}
+        {searchData.length !== 0 &&
+          searchData.slice(0, 5).map((data, index) => {
+            return (
+              <form key={index + 1} onSubmit={addToWatchlist}>
+                <div className="search-list">
+                  <h4>{Object.values(data)[0]}</h4>
+                  <span>{Object.values(data)[1]}</span>
+                  <button type="submit">+</button>
+                </div>
+              </form>
+            );
+          })}
       </div>
-
-      <div className="stock-list">
-        <h4>{stockName}</h4>
-        <h4>${stockPrice}</h4>
-      </div>
+      {stockName.map((data, i) => {
+        return (
+          <div className="stock-list" key={i + 1}>
+            <h4>{data.stock}</h4>
+            <h4>{data.price}</h4>
+          </div>
+        );
+      })}
     </div>
   );
 };
