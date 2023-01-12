@@ -23,10 +23,9 @@ const Watchlist = () => {
     e.preventDefault();
     const searchword = e.target.getElementsByTagName("h4")[0].innerText;
     let result = await fetch(
-      `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${searchword}&interval=5min&apikey=UOASVEI0FTZC85M8`
+      `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY_EXTENDED&symbol=${searchword}&interval=15min&slice=year1month1&apikey=UOASVEI0FTZC85M8`
     );
     result = await result.json();
-
     const [symbol, LTP] = Object.values(result).map((data, index) => {
       if (index === 0) {
         const stock = Object.values(data)[1];
