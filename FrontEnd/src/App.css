@@ -130,6 +130,61 @@ a {
   margin-left: 35%;
 }
 
+/* stock page styles */
+.outercontainer {
+  display: flex;
+}
+
+.stockspage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 50px;
+}
+
+.stockspage h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.stockspage h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.stockspage .quantity-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.stockspage .quantity-container label {
+  margin-right: 10px;
+}
+
+.stockspage .quantity-container input[type="number"] {
+  width: 50px;
+  text-align: center;
+}
+
+.stockspage .action-container {
+  display: flex;
+  justify-content: center;
+}
+
+.stockspage .action-container button {
+  padding: 10px 20px;
+  margin: 0 10px;
+  background-color: #4caf50; /* Green */
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.stockspage .action-container button:hover {
+  background-color: #3e8e41;
+}
+
 /* watchlist styles */
 .watchlist {
   background-color: #d6f3cc;

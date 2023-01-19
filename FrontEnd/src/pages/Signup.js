@@ -5,6 +5,7 @@ const Signup = () => {
   const [username, setUserName] = useState("");
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,17 +17,35 @@ const Signup = () => {
 
   const collectData = async (e) => {
     e.preventDefault();
-    let result = await fetch("http://localhost:5000/signup", {
-      method: "post",
-      body: JSON.stringify({ username, email, password }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    result = await result.json();
-    console.log(result);
-    localStorage.setItem("user", JSON.stringify(result));
-    navigate("/dashboard");
+    try {
+      // Input validation
+      if (!username || !email || !password) {
+        setError("Please fill in all the fields");
+        return;
+      }
+      if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+        setError("Please enter a valid email address");
+        return;
+      }
+
+      let result = await fetch("http://localhost:5000/signup", {
+        method: "post",
+        body: JSON.stringify({ username, email, password }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      result = await result.json();
+      console.log(result);
+      localStorage.setItem("user", JSON.stringify(result));
+      navigate("/dashboard");
+    } catch (err) {
+      if (err.response && err.response.data) {
+        setError(err.response.data.message);
+      } else {
+        setError("Something went wrong. Please try again later.");
+      }
+    }
   };
 
   return (

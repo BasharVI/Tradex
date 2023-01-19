@@ -9,6 +9,7 @@ import Signup from "./pages/Signup";
 import PrivateComponent from "./components/PrivateComponent";
 import Portfolio from "./components/Portfolio";
 import Orders from "./components/Orders";
+import Stocks from "./components/Stocks";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="dashboard" element={<Dashboard />}></Route>
             <Route path="Portfolio" element={<Portfolio />}></Route>
             <Route path="orders" element={<Orders />}></Route>
+            <Route path="stock/:id" element={<Stocks />}></Route>
           </Route>
           <Route exact path="/" element={<HomePage />}></Route>
           <Route path="signup" element={<Signup />}></Route>

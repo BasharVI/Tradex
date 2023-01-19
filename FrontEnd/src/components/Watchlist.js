@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Watchlist = () => {
   const [searchData, setsearchData] = useState([]);
   const [stockName, setstockName] = useState([]);
+
+  const navigate = useNavigate();
 
   const handleSearch = async (e) => {
     if (e.key === "Enter") {
@@ -23,7 +26,7 @@ const Watchlist = () => {
     e.preventDefault();
     const searchword = e.target.getElementsByTagName("h4")[0].innerText;
     let result = await fetch(
-      `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY_EXTENDED&symbol=${searchword}&interval=15min&slice=year1month1&apikey=UOASVEI0FTZC85M8`
+      `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${searchword}&interval=5min&apikey=UOASVEI0FTZC73M8`
     );
     result = await result.json();
     const [symbol, LTP] = Object.values(result).map((data, index) => {
@@ -37,10 +40,29 @@ const Watchlist = () => {
         return null;
       }
     });
+
+    // clear search data
     setsearchData([]);
     let inputField = document.querySelector(".inputfield");
     inputField.value = "";
     setstockName([{ stock: symbol, price: LTP }, ...stockName]);
+
+    const userId = JSON.parse(localStorage.getItem("user"))._id;
+    // make a POST request to the server
+    const res = await fetch("http://localhost:5000/watchlist", {
+      method: "POST",
+      body: JSON.stringify({ userId, stock: symbol, price: LTP }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await res.json();
+    console.log(data);
+  };
+
+  const handleStockClick = (e) => {
+    const stock = e.target.innerText;
+    navigate(`/stock/${stock}`);
   };
 
   return (
@@ -68,7 +90,7 @@ const Watchlist = () => {
       {stockName.map((data, i) => {
         return (
           <div className="stock-list" key={i + 1}>
-            <h4>{data.stock}</h4>
+            <h4 onClick={handleStockClick}>{data.stock}</h4>
             <h4>{data.price}</h4>
           </div>
         );
