@@ -41,23 +41,23 @@ const Watchlist = () => {
       }
     });
 
+    const userId = JSON.parse(localStorage.getItem("user"))._id;
+    // make a POST request to the server
+    let res = await fetch("http://localhost:5000/watchlist", {
+      method: "post",
+      body: JSON.stringify({ userId, stock: symbol }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    res = await res.json();
+    console.log(res);
+
     // clear search data
     setsearchData([]);
     let inputField = document.querySelector(".inputfield");
     inputField.value = "";
     setstockName([{ stock: symbol, price: LTP }, ...stockName]);
-
-    const userId = JSON.parse(localStorage.getItem("user"))._id;
-    // make a POST request to the server
-    const res = await fetch("http://localhost:5000/watchlist", {
-      method: "POST",
-      body: JSON.stringify({ userId, stock: symbol, price: LTP }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await res.json();
-    console.log(data);
   };
 
   const handleStockClick = (e) => {

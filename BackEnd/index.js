@@ -1,8 +1,8 @@
 const express = require("express");
 const User = require("./db/User");
-const request = require("request");
 const cors = require("cors");
 const { json } = require("express");
+const mongoose = require("mongoose");
 
 require("./db/config");
 
@@ -35,42 +35,63 @@ app.post("/login", async (req, res) => {
 
 // Add to watchlist
 
-// app.post("/stock/:symbol", async (req, res) => {
-//   console.log(req.body);
-//   const symbol = req.params.symbol;
-//   const url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=5min&apikey=UOASVEI0FTZC85M8`;
+app.post("/watchlist", async (req, res) => {
+  // extract userId and stock from request body
+  const { userId, stock } = req.body;
+  try {
+    // find user by id and push stock to their watchlist array
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $push: { watchlist: { stockName: stock } } },
+      { new: true }
+    );
+    res.send(updatedUser);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
 
-//   await request.get(
-//     {
-//       url: url,
-//       json: true,
-//       headers: { "User-Agent": "request" },
-//     },
-//     (err, res, data) => {
-//       if (err) {
-//         console.log("Error:", err);
-//       } else if (res.statusCode !== 200) {
-//         console.log("Status:", res.statusCode);
-//       } else {
-//         // data is successfully parsed as a JSON object:
-//         let output = data;
-//         const [symbol, LTP] = Object.values(output).map((data, index) => {
-//           if (index === 0) {
-//             const stock = Object.values(data)[1];
-//             return stock;
-//           } else if (index === 1) {
-//             const price = Object.values(data)[1];
-//             return Object.values(price)[3];
-//           } else {
-//             return null;
-//           }
-//         });
-//         console.log(symbol, LTP);
-//       }
-//     }
-//   );
-//   res.send("success");
-// });
+// Adding stock to portfolio and order creation
+
+app.post("/portfolio", async (req, res) => {
+  // extract userId, symbol and quantity from request body
+  const { userId, symbol, quantity, price, buySell } = req.body;
+
+  try {
+    // find user by id
+    const user = await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        $push: {
+          portfolio: {
+            stockName: symbol,
+            boughtPrice: price,
+            quantity: quantity,
+          },
+          orderHistory: {
+            stockName: symbol,
+            orderPrice: price,
+            quantity: quantity,
+            orderDate: new Date(),
+            orderType: buySell,
+          },
+        },
+      }
+    );
+    console.log("Stock added to portfolio and order created");
+    res.send(user);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+// get order history
+
+app.get("/orders", async (req, res) => {
+  const { userId } = req.query;
+  const user = await User.findById(userId);
+  res.send(user);
+});
 
 // Port connection
 app.listen(5000, () => {

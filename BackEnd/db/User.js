@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema({
       stockName: String,
       orderType: String,
       orderPrice: Number,
+      quantity: Number,
       orderDate: Date,
     },
   ],

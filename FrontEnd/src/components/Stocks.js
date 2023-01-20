@@ -32,19 +32,24 @@ const Stocks = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const userId = JSON.parse(localStorage.getItem("user"))._id;
+
     const details = {
+      userId,
       symbol: id,
       quantity,
       buySell,
+      price: stockData.LTP,
     };
     // API call
-    const response = await fetch("/api/update-portfolio", {
-      method: "POST",
+    const response = await fetch("http://localhost:5000/portfolio", {
+      method: "post",
       body: JSON.stringify(details),
       headers: { "Content-Type": "application/json" },
     });
     const data = await response.json();
-    if (data.succuss) {
+    console.log(data);
+    if (data) {
       console.log("Stock added to portfolio and order created");
       navigate("/Portfolio");
     } else {
