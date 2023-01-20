@@ -1,11 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Watchlist = () => {
   const [searchData, setsearchData] = useState([]);
   const [stockName, setstockName] = useState([]);
+  // console.log(stockName);
 
   const navigate = useNavigate();
+  const userId = JSON.parse(localStorage.getItem("user"))._id;
+
+  useEffect(() => {
+    (async () => {
+      let result = await fetch(
+        `http://localhost:5000/watchlist?userId=${userId}`,
+        {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      result = await result.json();
+      const watchlist = result.watchlist;
+      let stockList = [];
+
+      watchlist.map((data) => {
+        const stocsymbol = data.stockName;
+        const price = data.currentPrice;
+        stockList.push({ stock: stocsymbol, price: price });
+      });
+      setstockName(stockList);
+    })();
+  }, [userId]);
 
   const handleSearch = async (e) => {
     if (e.key === "Enter") {
@@ -45,7 +71,7 @@ const Watchlist = () => {
     // make a POST request to the server
     let res = await fetch("http://localhost:5000/watchlist", {
       method: "post",
-      body: JSON.stringify({ userId, stock: symbol }),
+      body: JSON.stringify({ userId, stock: symbol, price: LTP }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -91,7 +117,7 @@ const Watchlist = () => {
         return (
           <div className="stock-list" key={i + 1}>
             <h4 onClick={handleStockClick}>{data.stock}</h4>
-            <h4>{data.price}</h4>
+            <h4>${data.price}</h4>
           </div>
         );
       })}

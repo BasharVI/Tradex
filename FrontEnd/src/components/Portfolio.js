@@ -1,7 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Watchlist from "./Watchlist";
 
 const Portfolio = () => {
+  const [details, setdetails] = useState([]);
+
+  const userId = JSON.parse(localStorage.getItem("user"))._id;
+
+  useEffect(() => {
+    (async () => {
+      let result = await fetch(
+        `http://localhost:5000/portfolio?userId=${userId}`,
+        {
+          method: "get",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      result = await result.json();
+      const portfolio = result.portfolio;
+      setdetails(portfolio);
+    })();
+  }, [userId]);
+
   return (
     <div className="portfolio">
       <Watchlist />
@@ -17,12 +36,15 @@ const Portfolio = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>UPWK</td>
-              <td>$ 25</td>
-              <td>$ 27</td>
-              <td>{27 - 25}</td>
-            </tr>
+            {details.length > 0 &&
+              details.map((data, i) => (
+                <tr key={i}>
+                  <td>{data.stockName}</td>
+                  <td>$ {data.boughtPrice}</td>
+                  <td>$ {data.quantity}</td>
+                  <td>{27 - 25}</td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

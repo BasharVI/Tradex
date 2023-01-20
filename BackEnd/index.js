@@ -3,6 +3,7 @@ const User = require("./db/User");
 const cors = require("cors");
 const { json } = require("express");
 const mongoose = require("mongoose");
+const { findById } = require("./db/User");
 
 require("./db/config");
 
@@ -37,12 +38,12 @@ app.post("/login", async (req, res) => {
 
 app.post("/watchlist", async (req, res) => {
   // extract userId and stock from request body
-  const { userId, stock } = req.body;
+  const { userId, stock, price } = req.body;
   try {
     // find user by id and push stock to their watchlist array
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
-      { $push: { watchlist: { stockName: stock } } },
+      { $push: { watchlist: { stockName: stock, currentPrice: price } } },
       { new: true }
     );
     res.send(updatedUser);
@@ -78,11 +79,26 @@ app.post("/portfolio", async (req, res) => {
         },
       }
     );
-    console.log("Stock added to portfolio and order created");
+    // console.log("Stock added to portfolio and order created");
     res.send(user);
   } catch (error) {
     res.status(400).send(error);
   }
+});
+
+// get watchlist
+app.get("/watchlist", async (req, res) => {
+  const { userId } = req.query;
+  const user = await User.findById(userId);
+  res.send(user);
+});
+
+//get portfolio
+
+app.get("/portfolio", async (req, res) => {
+  const { userId } = req.query;
+  const user = await User.findById(userId);
+  res.send(user);
 });
 
 // get order history
