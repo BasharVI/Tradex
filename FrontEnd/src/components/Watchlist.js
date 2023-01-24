@@ -22,12 +22,12 @@ const Watchlist = () => {
       );
       result = await result.json();
       const watchlist = result.watchlist;
-      let stockList = [];
 
+      let stockList = [];
       watchlist.map((data) => {
         const stocsymbol = data.stockName;
         const price = data.currentPrice;
-        stockList.push({ stock: stocsymbol, price: price });
+        return stockList.push({ stock: stocsymbol, price: price });
       });
       setstockName(stockList);
     })();

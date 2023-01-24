@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import AddFund from "../components/AddFund";
 import Watchlist from "../components/Watchlist";
 
 const Dashboard = () => {
@@ -14,7 +15,8 @@ const Dashboard = () => {
       <Watchlist />
       <div className="dash-content">
         <h1>Welcome {loggedInUser.username}</h1>
-        <h2>Add stocks to Watchlist</h2>
+        {/* <h2>Add stocks to Watchlist</h2> */}
+        <AddFund />
       </div>
     </div>
   );

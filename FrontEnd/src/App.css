@@ -298,6 +298,18 @@ a {
   padding: 25px;
 }
 
+/* addfund styling */
+
+.account-balance {
+  background-color: #80cb82;
+  padding: 5rem;
+  margin: 5rem;
+  display: block;
+  justify-content: center;
+  align-items: center;
+  border-radius: 25px;
+}
+
 /* Footer Styles */
 
 .footer {

@@ -36,7 +36,7 @@ const Signup = () => {
         },
       });
       result = await result.json();
-      console.log(result);
+      // console.log(result);
       localStorage.setItem("user", JSON.stringify(result));
       navigate("/dashboard");
     } catch (err) {
@@ -52,6 +52,7 @@ const Signup = () => {
     <div className="signup-page">
       <form onSubmit={collectData}>
         <h3>Create new account</h3>
+        <h5>{error}</h5>
         <label className="label" htmlFor="userName">
           User Name
         </label>

@@ -86,6 +86,20 @@ app.post("/portfolio", async (req, res) => {
   }
 });
 
+// Add fund
+app.post("/addfund", async (req, res) => {
+  const { userId, fund } = req.body;
+  const user = await User.findByIdAndUpdate(
+    { _id: userId },
+    {
+      $inc: {
+        fund: fund,
+      },
+    }
+  );
+  res.send(user);
+});
+
 // get watchlist
 app.get("/watchlist", async (req, res) => {
   const { userId } = req.query;
@@ -107,6 +121,17 @@ app.get("/orders", async (req, res) => {
   const { userId } = req.query;
   const user = await User.findById(userId);
   res.send(user);
+});
+
+// Get accont balnce
+app.get("/addfund", async (req, res) => {
+  const { userId } = req.query;
+  try {
+    let result = await User.findById(userId).select("fund").lean();
+    res.send(result);
+  } catch (error) {
+    res.status(400).send(error);
+  }
 });
 
 // Port connection

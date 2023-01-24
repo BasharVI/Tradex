@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema({
   username: String,
   email: String,
   password: String,
+  fund: { type: Number, default: 0 },
   watchlist: [
     {
       stockName: String,
