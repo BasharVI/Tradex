@@ -85,6 +85,19 @@ const Watchlist = () => {
     setstockName([...stockName, { stock: symbol, price: LTP }]);
   };
 
+  const handleRemoveStock = async (stock) => {
+    await fetch(`http://localhost:5000/watchlist`, {
+      method: "DELETE",
+      body: JSON.stringify({ userId, stock }),
+      headers: { "Content-Type": "application/json" },
+    });
+    // const output = await result.json();
+    // console.log(output.watchlist);
+    const updatedWatchlist = stockName.filter((data) => data.stock !== stock);
+    // Update the state with the new array
+    setstockName(updatedWatchlist);
+  };
+
   const handleStockClick = (e) => {
     const stock = e.target.innerText;
     navigate(`/stock/${stock}`);
@@ -117,6 +130,13 @@ const Watchlist = () => {
           <div className="stock-list" key={i + 1}>
             <h4 onClick={handleStockClick}>{data.stock}</h4>
             <h4>${data.price}</h4>
+            <button
+              onClick={() => {
+                handleRemoveStock(data.stock);
+              }}
+            >
+              -
+            </button>
           </div>
         );
       })}

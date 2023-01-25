@@ -211,6 +211,7 @@ a {
   padding-left: 25px;
 }
 .stock-list {
+  background-color: #80cb82;
   display: flex;
   padding: 25px;
   text-align: left;
@@ -227,6 +228,14 @@ a {
 }
 .stock-list h4:hover {
   scale: 1.2;
+}
+.stock-list button {
+  background-color: #c2e9b6;
+  font-size: large;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
 }
 
 .search-list {

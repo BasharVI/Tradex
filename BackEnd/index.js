@@ -52,6 +52,18 @@ app.post("/watchlist", async (req, res) => {
   }
 });
 
+// Remove stock from watchlist
+
+app.delete("/watchlist", async (req, res) => {
+  const { userId, stock } = req.body;
+  const updateUser = await User.findOneAndUpdate(
+    { _id: userId },
+    { $pull: { watchlist: { stockName: stock } } }
+  );
+  // await updateUser.save();
+  res.send(updateUser);
+});
+
 // Adding stock to portfolio and order creation
 
 app.post("/portfolio", async (req, res) => {
@@ -75,8 +87,8 @@ app.post("/portfolio", async (req, res) => {
           { _id: userId, "portfolio.stockName": symbol },
           {
             $inc: {
-              "portfolio.$.quantity": buySell === "sell" ? -quantity : quantity,
-              fund: buySell === "buy" ? -cost : cost,
+              "portfolio.$.quantity": quantity,
+              fund: -cost,
             },
 
             $push: {
@@ -109,12 +121,13 @@ app.post("/portfolio", async (req, res) => {
               },
             },
             $inc: {
-              fund: buySell === "buy" ? -cost : cost,
+              fund: -cost,
             },
           }
         );
       }
     } else {
+      // stock sell
       const portfolioStock = user.portfolio.find(
         (stock) => stock.stockName === symbol
       );
@@ -125,7 +138,12 @@ app.post("/portfolio", async (req, res) => {
         // remove stock
         const updatedUser = await User.findOneAndUpdate(
           { _id: userId },
-          { $pull: { portfolio: { stockName: symbol } } },
+          {
+            $pull: { portfolio: { stockName: symbol } },
+            $inc: {
+              fund: cost,
+            },
+          },
           { new: true }
         );
         await updatedUser.save();
@@ -138,7 +156,7 @@ app.post("/portfolio", async (req, res) => {
         // update stock quantity
         const updatedUser = await User.findOneAndUpdate(
           { _id: userId, "portfolio.stockName": symbol },
-          { $inc: { "portfolio.$.quantity": -quantity } },
+          { $inc: { "portfolio.$.quantity": -quantity, fund: cost } },
           { new: true }
         );
         return res.send(updatedUser);
