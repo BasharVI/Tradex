@@ -97,7 +97,8 @@ app.post("/portfolio", async (req, res) => {
                 orderType: buySell,
               },
             },
-          }
+          },
+          { new: true }
         );
       } else {
         const user = await User.findOneAndUpdate(
@@ -120,7 +121,8 @@ app.post("/portfolio", async (req, res) => {
             $inc: {
               fund: -cost,
             },
-          }
+          },
+          { new: true }
         );
       }
     } else {
@@ -140,10 +142,18 @@ app.post("/portfolio", async (req, res) => {
             $inc: {
               fund: cost,
             },
+            $push: {
+              orderHistory: {
+                stockName: symbol,
+                orderPrice: price,
+                quantity: quantity,
+                orderDate: new Date().toLocaleDateString("en-US"),
+                orderType: buySell,
+              },
+            },
           },
           { new: true }
         );
-        await updatedUser.save();
         return res.send(updatedUser);
       } else if (portfolioStock.quantity < quantity) {
         return res
@@ -153,7 +163,18 @@ app.post("/portfolio", async (req, res) => {
         // update stock quantity
         const updatedUser = await User.findOneAndUpdate(
           { _id: userId, "portfolio.stockName": symbol },
-          { $inc: { "portfolio.$.quantity": -quantity, fund: cost } },
+          {
+            $inc: { "portfolio.$.quantity": -quantity, fund: cost },
+            $push: {
+              orderHistory: {
+                stockName: symbol,
+                orderPrice: price,
+                quantity: quantity,
+                orderDate: new Date().toLocaleDateString("en-US"),
+                orderType: buySell,
+              },
+            },
+          },
           { new: true }
         );
         return res.send(updatedUser);

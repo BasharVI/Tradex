@@ -52,7 +52,7 @@ const Portfolio = () => {
                   <td>{data.quantity}</td>
                   <td>$ {data.boughtPrice}</td>
                   <td>{data.boughtPrice}</td>
-                  <td>{Math.trunc(data.boughtPrice - 25)}</td>
+                  <td>{Math.trunc(data.boughtPrice - data.boughtPrice)}</td>
                 </tr>
               ))}
           </tbody>
