@@ -60,14 +60,12 @@ app.delete("/watchlist", async (req, res) => {
     { _id: userId },
     { $pull: { watchlist: { stockName: stock } } }
   );
-  // await updateUser.save();
   res.send(updateUser);
 });
 
 // Adding stock to portfolio and order creation
 
 app.post("/portfolio", async (req, res) => {
-  // extract userId, symbol and quantity from request body
   const { userId, symbol, quantity, price, buySell } = req.body;
   const cost = price * quantity;
   const user = await User.findOne({ _id: userId });
@@ -77,7 +75,6 @@ app.post("/portfolio", async (req, res) => {
 
   try {
     if (buySell === "buy") {
-      // find the stock in users portfolio
       const existingstock = await User.findOne({
         _id: userId,
         "portfolio.stockName": symbol,

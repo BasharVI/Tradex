@@ -13,10 +13,29 @@ a {
 
 .hero {
   display: block;
-  height: 50vh;
-  background-color: #74896d;
-  margin: 5%;
-  padding: 5%;
+  height: 100vh;
+  /* margin: 2%; */
+  padding: 10%;
+  background-image: url("./hero.jpg");
+  background-size: 100%;
+}
+.hero h1 {
+  color: #2b880d;
+  float: right;
+  font-weight: bolder;
+  margin-top: 50px;
+  margin-left: 200px;
+}
+.hero h2 {
+  color: #2b880d;
+  float: left;
+  margin-top: 75px;
+  margin-left: 80%;
+}
+.hero button {
+  width: 85px;
+  height: 35px;
+  background-color: #1ee825;
 }
 
 /* Header Styles */
@@ -26,6 +45,10 @@ a {
   height: 65px;
   display: flex;
   justify-content: flex-end;
+}
+.header .logo {
+  padding: 10px;
+  margin-right: auto;
 }
 .header ul {
   font-size: 2rem;

@@ -13,6 +13,9 @@ const Header = () => {
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
   return (
     <div className="header">
+      <h1 className="logo">
+        <Link to="/">TradeX</Link>
+      </h1>
       <ul>
         <li>{loggedInUser ? <Link to="/dashboard">Dashboard</Link> : null}</li>
         <li>{loggedInUser ? <Link to="/portfolio">Portfolio</Link> : null}</li>
