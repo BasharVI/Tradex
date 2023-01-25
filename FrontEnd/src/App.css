@@ -23,13 +23,17 @@ a {
 .header {
   background-color: #a0dd8c;
   width: 100%;
-  height: 50px;
+  height: 65px;
   display: flex;
   justify-content: flex-end;
+}
+.header ul {
+  font-size: 2rem;
 }
 .header ul li {
   display: inline-block;
   padding: 15px;
+  font-size: medium;
 }
 .footer {
   position: fixed;
@@ -37,8 +41,9 @@ a {
   bottom: 0;
   text-align: center;
   width: 100%;
-  height: 35px;
+  height: 50px;
   margin-top: 35px;
+  padding: 10px;
 }
 
 /* Signup Page Styles  */
@@ -139,7 +144,13 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 50px;
+  margin: 12%;
+  padding: 2%;
+  width: 60%;
+  height: 60%;
+  border: #80cb82 solid;
+  border-radius: 25px;
+  background-color: #80cb82;
 }
 
 .stockspage h1 {
@@ -162,8 +173,9 @@ a {
   margin-right: 10px;
 }
 
-.stockspage .quantity-container input[type="number"] {
-  width: 50px;
+.stockspage .quantity-container input {
+  width: 50%;
+  height: 20%;
   text-align: center;
 }
 
@@ -175,14 +187,14 @@ a {
 .stockspage .action-container button {
   padding: 10px 20px;
   margin: 0 10px;
-  background-color: #4caf50; /* Green */
-  color: white;
+  background-color: #054805;
+  color: rgb(243, 245, 243);
   border: none;
   cursor: pointer;
 }
 
 .stockspage .action-container button:hover {
-  background-color: #3e8e41;
+  background-color: #1ee825;
 }
 
 /* watchlist styles */

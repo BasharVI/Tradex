@@ -62,7 +62,7 @@ const Stocks = () => {
       <Watchlist />
       <div className="stockspage">
         <h1>{stockData.symbol}</h1>
-        <h2>{stockData.LTP}</h2>
+        <h2>${Number(stockData.LTP).toFixed(2)}</h2>
         <form onSubmit={handleSubmit}>
           <div className="quantity-container">
             <label>

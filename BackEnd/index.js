@@ -57,28 +57,94 @@ app.post("/watchlist", async (req, res) => {
 app.post("/portfolio", async (req, res) => {
   // extract userId, symbol and quantity from request body
   const { userId, symbol, quantity, price, buySell } = req.body;
+  const cost = price * quantity;
+  const user = await User.findOne({ _id: userId });
+  if (!user) return res.status(404).send("User not found");
+  if (buySell === "buy" && user.fund < cost)
+    return res.status(400).send("Funds not sufficient");
 
   try {
-    // find user by id
-    const user = await User.findOneAndUpdate(
-      { _id: userId },
-      {
-        $push: {
-          portfolio: {
-            stockName: symbol,
-            boughtPrice: price,
-            quantity: quantity,
-          },
-          orderHistory: {
-            stockName: symbol,
-            orderPrice: price,
-            quantity: quantity,
-            orderDate: new Date(),
-            orderType: buySell,
-          },
-        },
+    if (buySell === "buy") {
+      // find the stock in users portfolio
+      const existingstock = await User.findOne({
+        _id: userId,
+        "portfolio.stockName": symbol,
+      });
+      if (existingstock) {
+        const user = await User.findOneAndUpdate(
+          { _id: userId, "portfolio.stockName": symbol },
+          {
+            $inc: {
+              "portfolio.$.quantity": buySell === "sell" ? -quantity : quantity,
+              fund: buySell === "buy" ? -cost : cost,
+            },
+
+            $push: {
+              orderHistory: {
+                stockName: symbol,
+                orderPrice: price,
+                quantity: quantity,
+                orderDate: new Date().toLocaleDateString("en-US"),
+                orderType: buySell,
+              },
+            },
+          }
+        );
+      } else {
+        const user = await User.findOneAndUpdate(
+          { _id: userId },
+          {
+            $push: {
+              portfolio: {
+                stockName: symbol,
+                boughtPrice: price,
+                quantity: quantity,
+              },
+              orderHistory: {
+                stockName: symbol,
+                orderPrice: price,
+                quantity: quantity,
+                orderDate: new Date().toLocaleDateString("en-US"),
+                orderType: buySell,
+              },
+            },
+            $inc: {
+              fund: buySell === "buy" ? -cost : cost,
+            },
+          }
+        );
       }
-    );
+    } else {
+      const portfolioStock = user.portfolio.find(
+        (stock) => stock.stockName === symbol
+      );
+
+      if (!portfolioStock) {
+        return res.status(404).send("Stock not found in portfolio");
+      } else if (portfolioStock.quantity == quantity) {
+        // remove stock
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: userId },
+          { $pull: { portfolio: { stockName: symbol } } },
+          { new: true }
+        );
+        await updatedUser.save();
+        return res.send(updatedUser);
+      } else if (portfolioStock.quantity < quantity) {
+        return res
+          .status(400)
+          .send("Quantity in portfolio is less than the quantity being sold");
+      } else {
+        // update stock quantity
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: userId, "portfolio.stockName": symbol },
+          { $inc: { "portfolio.$.quantity": -quantity } },
+          { new: true }
+        );
+        return res.send(updatedUser);
+      }
+    }
+
     // console.log("Stock added to portfolio and order created");
     res.send(user);
   } catch (error) {

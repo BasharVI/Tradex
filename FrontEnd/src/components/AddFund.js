@@ -29,7 +29,7 @@ const AddFund = () => {
 
   return (
     <div className="account-balance">
-      <h3>Account Balance : ${balance}</h3>
+      <h3>Account Balance : ${Number(balance).toFixed(2)}</h3>
       <form onSubmit={handleSubmit}>
         <label>Enter Amount</label>
         <input

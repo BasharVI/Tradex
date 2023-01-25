@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Watchlist from "./Watchlist";
 
 const Portfolio = () => {
   const [details, setdetails] = useState([]);
 
   const userId = JSON.parse(localStorage.getItem("user"))._id;
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -21,6 +24,11 @@ const Portfolio = () => {
     })();
   }, [userId]);
 
+  const handleclick = (e) => {
+    const stock = e.target.innerText;
+    navigate(`/stock/${stock}`);
+  };
+
   return (
     <div className="portfolio">
       <Watchlist />
@@ -30,6 +38,7 @@ const Portfolio = () => {
           <thead>
             <tr>
               <th>Stock</th>
+              <th>Quantity</th>
               <th>Buy price</th>
               <th>LTP</th>
               <th>Profit/Loss</th>
@@ -39,10 +48,11 @@ const Portfolio = () => {
             {details.length > 0 &&
               details.map((data, i) => (
                 <tr key={i}>
-                  <td>{data.stockName}</td>
+                  <td onClick={handleclick}>{data.stockName}</td>
+                  <td>{data.quantity}</td>
                   <td>$ {data.boughtPrice}</td>
-                  <td>$ {data.quantity}</td>
-                  <td>{27 - 25}</td>
+                  <td>{data.boughtPrice}</td>
+                  <td>{Math.trunc(data.boughtPrice - 25)}</td>
                 </tr>
               ))}
           </tbody>

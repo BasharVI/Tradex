@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 const Watchlist = () => {
   const [searchData, setsearchData] = useState([]);
   const [stockName, setstockName] = useState([]);
-  // console.log(stockName);
 
   const navigate = useNavigate();
   const userId = JSON.parse(localStorage.getItem("user"))._id;
@@ -69,21 +68,21 @@ const Watchlist = () => {
 
     const userId = JSON.parse(localStorage.getItem("user"))._id;
     // make a POST request to the server
-    let res = await fetch("http://localhost:5000/watchlist", {
+    const res = await fetch("http://localhost:5000/watchlist", {
       method: "post",
       body: JSON.stringify({ userId, stock: symbol, price: LTP }),
       headers: {
         "Content-Type": "application/json",
       },
     });
-    res = await res.json();
-    console.log(res);
+    const out = await res.json();
+    console.log(out);
 
     // clear search data
     setsearchData([]);
     let inputField = document.querySelector(".inputfield");
     inputField.value = "";
-    setstockName([{ stock: symbol, price: LTP }, ...stockName]);
+    setstockName([...stockName, { stock: symbol, price: LTP }]);
   };
 
   const handleStockClick = (e) => {
