@@ -4,14 +4,10 @@ const router = express.Router();
 const User = require("../db/User");
 
 router.post("/", async (req, res) => {
-  if (req.body.password && req.body.email) {
-    const hashedPassword = bcrypt.hashSync(req.body.password, 5);
-    const data = {
-      email: req.body.email,
-      password: hashedPassword,
-    };
-    let user = await User.findOne({ data });
-    if (user && bcrypt.compareSync(req.body.password, user.password)) {
+  const { email, password } = req.body;
+  if (email && password) {
+    let user = await User.findOne({ email: email });
+    if (user && bcrypt.compareSync(password, user.password)) {
       res.send(user);
     } else {
       res.send({ result: "No User found" });

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../db/User");
 
+// Fetching fund data from Database
 router.get("/", async (req, res) => {
   const { userId } = req.query;
   try {
@@ -12,6 +13,7 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Add fund
 router.post("/", async (req, res) => {
   const { userId, fund } = req.body;
   const user = await User.findByIdAndUpdate(

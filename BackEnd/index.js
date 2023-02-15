@@ -1,9 +1,5 @@
 const express = require("express");
-const User = require("./db/User");
 const cors = require("cors");
-const { json } = require("express");
-const mongoose = require("mongoose");
-const { findById } = require("./db/User");
 const signupRouter = require("./routes/signup");
 const loginRouter = require("./routes/login");
 const addfundRouter = require("./routes/addFund");
@@ -16,6 +12,8 @@ require("./db/config");
 // Middlewares
 app.use(express.json());
 app.use(cors());
+
+// Routes handlers
 app.use("/signup", signupRouter);
 app.use("/login", loginRouter);
 app.use("/watchlist", watchlistRouter);
