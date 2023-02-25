@@ -32,6 +32,7 @@ const Watchlist = () => {
     })();
   }, [userId]);
 
+  // Handling stock Search
   const handleSearch = async (e) => {
     if (e.key === "Enter") {
       const searchWord = e.target.value;
@@ -47,6 +48,7 @@ const Watchlist = () => {
     }
   };
 
+  // Adding stocks to the watchlist
   const addToWatchlist = async (e) => {
     e.preventDefault();
     const searchword = e.target.getElementsByTagName("h4")[0].innerText;
@@ -65,9 +67,7 @@ const Watchlist = () => {
         return null;
       }
     });
-
-    const userId = JSON.parse(localStorage.getItem("user"))._id;
-    // make a POST request to the server
+    // const userId = JSON.parse(localStorage.getItem("user"))._id; // fetch userId from local storage
     const res = await fetch("http://localhost:5000/watchlist", {
       method: "post",
       body: JSON.stringify({ userId, stock: symbol, price: LTP }),
@@ -75,8 +75,6 @@ const Watchlist = () => {
         "Content-Type": "application/json",
       },
     });
-    const out = await res.json();
-    console.log(out);
 
     // clear search data
     setsearchData([]);
@@ -85,19 +83,19 @@ const Watchlist = () => {
     setstockName([...stockName, { stock: symbol, price: LTP }]);
   };
 
+  // Remove stock from the watchlist
   const handleRemoveStock = async (stock) => {
     await fetch(`http://localhost:5000/watchlist`, {
       method: "DELETE",
       body: JSON.stringify({ userId, stock }),
       headers: { "Content-Type": "application/json" },
     });
-    // const output = await result.json();
-    // console.log(output.watchlist);
-    const updatedWatchlist = stockName.filter((data) => data.stock !== stock);
+    const updatedWatchlist = stockName.filter((data) => data.stock !== stock); // updating watchlist
     // Update the state with the new array
     setstockName(updatedWatchlist);
   };
 
+  // Redirecting to the stock page
   const handleStockClick = (e) => {
     const stock = e.target.innerText;
     navigate(`/stock/${stock}`);

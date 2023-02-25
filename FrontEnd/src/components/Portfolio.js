@@ -4,10 +4,9 @@ import Watchlist from "./Watchlist";
 
 const Portfolio = () => {
   const [details, setdetails] = useState([]);
+  const navigate = useNavigate();
 
   const userId = JSON.parse(localStorage.getItem("user"))._id;
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -24,6 +23,7 @@ const Portfolio = () => {
     })();
   }, [userId]);
 
+  // Redirect to stock page on click
   const handleclick = (e) => {
     const stock = e.target.innerText;
     navigate(`/stock/${stock}`);
