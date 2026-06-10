@@ -75,4 +75,24 @@ module.exports = {
     maxFundDeposit: num(process.env.MAX_FUND_DEPOSIT, 1_000_000),
     sellPriceTolerance: num(process.env.SELL_PRICE_TOLERANCE, 0.1),
   },
+  // Redis for caching and pub/sub
+  redis: {
+    url: process.env.REDIS_URL || process.env.REDIS_HOST || "redis://127.0.0.1:6379",
+    ttl: num(process.env.REDIS_TTL_SECONDS, 60),
+  },
+  // Market data provider selection and credentials
+  market: {
+    provider: process.env.MARKET_PROVIDER || "upstox",
+    upstox: {
+      apiKey: process.env.UPSTOX_API_KEY || "",
+      apiSecret: process.env.UPSTOX_API_SECRET || "",
+      baseUrl: process.env.UPSTOX_BASE_URL || "https://api.upstox.com",
+      websocketUrl: process.env.UPSTOX_WS_URL || "wss://stream.upstox.com",
+    },
+    angelone: {
+      apiKey: process.env.ANGELONE_API_KEY || "",
+      apiSecret: process.env.ANGELONE_API_SECRET || "",
+      baseUrl: process.env.ANGELONE_BASE_URL || "https://api.angelone.in",
+    },
+  },
 };

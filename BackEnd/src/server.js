@@ -1,11 +1,35 @@
+const http = require("http");
+const { Server } = require("socket.io");
 const app = require("./app");
 const { connectDb } = require("./config/db");
 const { port } = require("./config/env");
+const { initRedis } = require("./services/redisClient");
+const StreamingService = require("./services/streaming.service");
 
 (async () => {
   try {
     await connectDb();
-    app.listen(port, () => {
+    // init redis
+    initRedis();
+
+    const server = http.createServer(app);
+    const io = new Server(server, { /* options */ });
+
+    // simple socket logging
+    io.on("connection", (socket) => {
+      // eslint-disable-next-line no-console
+      console.log("[io] client connected", socket.id);
+      socket.on("disconnect", () => {
+        // eslint-disable-next-line no-console
+        console.log("[io] client disconnected", socket.id);
+      });
+    });
+
+    // start streaming service
+    const streaming = new StreamingService(io);
+    streaming.start();
+
+    server.listen(port, () => {
       // eslint-disable-next-line no-console
       console.log(`[server] listening on port ${port}`);
     });
