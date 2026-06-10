@@ -18,6 +18,7 @@ const stocksRoutes = require("./routes/stocks.routes");
 const heatmapRoutes = require("./routes/heatmap.routes");
 const ipoRoutes = require("./routes/ipo.routes");
 const corpActionRoutes = require("./routes/corporateActions.routes");
+const retentionRoutes = require("./routes/retention.routes");
 
 const app = express();
 
@@ -64,6 +65,7 @@ app.use("/api/stocks", stocksRoutes);
 app.use("/api/heatmap", heatmapRoutes);
 app.use("/api/ipo", ipoRoutes);
 app.use("/api/corporate-actions", corpActionRoutes);
+app.use("/api/retention", retentionRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

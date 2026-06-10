@@ -39,6 +39,7 @@ const {
   issuePasswordResetToken,
   consumePasswordResetToken,
 } = require("../services/auth.service");
+const { recordLoginEvent } = require("../services/retention.service");
 const {
   sendVerificationEmail,
   sendPasswordResetEmail,
@@ -119,6 +120,10 @@ router.post(
     });
 
     const tokens = await issueSession(res, user, deviceInfo(req));
+    await recordLoginEvent(user._id).catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error("[retention] login streak update failed:", err.message);
+    });
     res.status(201).json({ user: publicUser(user), ...tokens });
   })
 );
@@ -148,6 +153,10 @@ router.post(
     const device = deviceInfo(req);
     await registerSuccessfulLogin(user, device);
     const tokens = await issueSession(res, user, device);
+    await recordLoginEvent(user._id).catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error("[retention] login streak update failed:", err.message);
+    });
     res.json({ user: publicUser(user), ...tokens });
   })
 );
@@ -239,6 +248,10 @@ router.post(
     const device = deviceInfo(req);
     await registerSuccessfulLogin(user, device);
     const tokens = await issueSession(res, user, device);
+    await recordLoginEvent(user._id).catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error("[retention] login streak update failed:", err.message);
+    });
     res.status(isNew ? 201 : 200).json({ user: publicUser(user), ...tokens });
   })
 );

@@ -8,6 +8,7 @@ const FundLedger = require("../models/FundLedger");
 const AppError = require("../utils/AppError");
 const { calculateCharges, netCashFlow } = require("./charges.service");
 const { postEntry } = require("./ledger.service");
+const { recordTradeEvent } = require("./retention.service");
 
 const round2 = (n) => Math.round(n * 100) / 100;
 
@@ -91,6 +92,10 @@ async function placeOrder(userId, payload) {
 
   try {
     const trade = await executeFill(order, executionPrice);
+    await recordTradeEvent(userId, trade.tradeDoc).catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error("[retention] trade event failed:", err.message);
+    });
     return { order: trade.orderRefreshed, trade: trade.tradeDoc };
   } catch (err) {
     await Order.updateOne(
