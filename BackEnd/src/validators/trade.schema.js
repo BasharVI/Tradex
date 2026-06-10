@@ -12,7 +12,7 @@ const tradeSchema = Joi.object({
 });
 
 const addFundSchema = Joi.object({
-  amount: Joi.number().positive().finite().required(),
+  amount: Joi.number().positive().required(),
 });
 
 const watchlistAddSchema = Joi.object({
