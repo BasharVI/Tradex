@@ -10,9 +10,13 @@
 
 # production
 /build
+/.next
+/.vercel
+out
 
 # misc
 .DS_Store
+tsconfig.tsbuildinfo
 .env
 .env.local
 .env.development.local
