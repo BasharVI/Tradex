@@ -1,77 +1,61 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Watchlist from "./Watchlist";
-import { api } from "../lib/api";
-
-const AV_KEY = process.env.REACT_APP_ALPHAVANTAGE_KEY || "";
+import { api, formatINR, formatPct } from "../lib/api";
 
 const Stocks = () => {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Seed from router state if the caller passed a cached price (e.g. from the
-  // watchlist). Avoids a flash of $0 while the live fetch is in flight, and
-  // also gives us a sane fallback when Alphavantage rate-limits us.
-  const seededPrice = Number(location.state && location.state.price) || 0;
+  const seededExchange = (location.state && location.state.exchange) || "NSE";
 
-  const [stockData, setStockData] = useState({ symbol: id, LTP: seededPrice });
+  const [stock, setStock] = useState(null);
+  const [exchange, setExchange] = useState(seededExchange);
+  const [side, setSide] = useState("BUY");
+  const [orderType, setOrderType] = useState("MARKET");
+  const [productType, setProductType] = useState("CNC");
   const [quantity, setQuantity] = useState("");
-  const [buySell, setBuySell] = useState("buy");
+  const [limitPrice, setLimitPrice] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!AV_KEY) return;
-    let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(
-          `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${encodeURIComponent(
-            id
-          )}&apikey=${AV_KEY}`
-        );
-        const result = await res.json();
-        const quote = result && result["Global Quote"];
-        const price = quote ? Number(quote["05. price"]) : 0;
-        // Only update on a real, positive price. A rate-limited or empty
-        // response must not clobber the seeded / previously fetched value.
-        if (!cancelled && Number.isFinite(price) && price > 0) {
-          setStockData({ symbol: id, LTP: price });
-        }
-      } catch {
-        // Swallow — keep whatever LTP we already have.
+        const data = await api(`/stocks/${id}/${exchange}`);
+        setStock(data.stock);
+      } catch (err) {
+        setError(err.message);
       }
     })();
-    return () => {
-      cancelled = true;
-    };
-  }, [id]);
+  }, [id, exchange]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     const q = Number(quantity);
-    if (!Number.isInteger(q) || q < 1) {
-      setError("Quantity must be a positive integer");
-      return;
-    }
-    if (!stockData.LTP || stockData.LTP <= 0) {
-      setError("No current price available — try again in a moment");
-      return;
+    if (!Number.isInteger(q) || q < 1) return setError("Quantity must be a positive integer");
+    if (orderType === "LIMIT" && (!Number(limitPrice) || Number(limitPrice) <= 0)) {
+      return setError("Limit price required for LIMIT order");
     }
     setSubmitting(true);
     try {
-      await api("/portfolio", {
-        method: "POST",
-        body: {
-          symbol: id,
-          quantity: q,
-          buySell,
-          price: stockData.LTP,
-        },
-      });
-      navigate("/portfolio");
+      const body = {
+        symbol: id,
+        exchange,
+        side,
+        orderType,
+        productType,
+        quantity: q,
+      };
+      if (orderType === "LIMIT") body.limitPrice = Number(limitPrice);
+      const res = await api("/orders", { method: "POST", body });
+      if (res.order && res.order.status === "PENDING") {
+        navigate("/orders");
+      } else {
+        navigate("/portfolio");
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -79,43 +63,73 @@ const Stocks = () => {
     }
   };
 
+  if (!stock) {
+    return (
+      <div className="outercontainer">
+        <Watchlist />
+        <div className="stockspage">
+          {error ? <p style={{ color: "crimson" }}>{error}</p> : <p>Loading…</p>}
+        </div>
+      </div>
+    );
+  }
+
+  const dayChg = stock.lastPrice - stock.previousClose;
+  const dayChgPct = stock.previousClose ? (dayChg / stock.previousClose) * 100 : 0;
+
   return (
     <div className="outercontainer">
       <Watchlist />
       <div className="stockspage">
-        <h1>{stockData.symbol}</h1>
-        <h2>${Number(stockData.LTP || 0).toFixed(2)}</h2>
+        <h1>{stock.symbol} <small style={{ color: "#888" }}>{stock.exchange}</small></h1>
+        <h3 style={{ marginTop: -8, color: "#666" }}>{stock.companyName}</h3>
+        <div style={{ display: "flex", gap: 16, alignItems: "baseline" }}>
+          <h2>{formatINR(stock.lastPrice)}</h2>
+          <span style={{ color: dayChg >= 0 ? "green" : "crimson" }}>
+            {dayChg >= 0 ? "+" : ""}{formatINR(dayChg)} ({formatPct(dayChgPct)})
+          </span>
+        </div>
+        <div style={{ fontSize: 12, color: "#888", marginBottom: 12 }}>
+          Sector: {stock.sector} · Industry: {stock.industry} · Lot: {stock.lotSize}
+        </div>
         {error && <p style={{ color: "crimson" }}>{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <div className="quantity-container">
-            <label>
-              Quantity:
-              <input
-                type="number"
-                min="1"
-                step="1"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-              />
+
+        <form onSubmit={handleSubmit} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, maxWidth: 480 }}>
+          <label>Exchange
+            <select value={exchange} onChange={(e) => setExchange(e.target.value)}>
+              <option value="NSE">NSE</option>
+              <option value="BSE">BSE</option>
+            </select>
+          </label>
+          <label>Side
+            <select value={side} onChange={(e) => setSide(e.target.value)}>
+              <option value="BUY">Buy</option>
+              <option value="SELL">Sell</option>
+            </select>
+          </label>
+          <label>Order Type
+            <select value={orderType} onChange={(e) => setOrderType(e.target.value)}>
+              <option value="MARKET">Market</option>
+              <option value="LIMIT">Limit</option>
+            </select>
+          </label>
+          <label>Product
+            <select value={productType} onChange={(e) => setProductType(e.target.value)}>
+              <option value="CNC">CNC (Delivery)</option>
+              <option value="MIS">MIS (Intraday)</option>
+            </select>
+          </label>
+          <label>Quantity
+            <input type="number" min="1" step="1" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+          </label>
+          {orderType === "LIMIT" && (
+            <label>Limit Price
+              <input type="number" min="0" step="0.05" value={limitPrice} onChange={(e) => setLimitPrice(e.target.value)} />
             </label>
-          </div>
-          <br />
-          <div className="action-container">
-            <label>
-              Buy/Sell:
-              <select
-                value={buySell}
-                onChange={(e) => setBuySell(e.target.value)}
-              >
-                <option value="buy">Buy</option>
-                <option value="sell">Sell</option>
-              </select>
-            </label>
-            <br />
-            <button type="submit" disabled={submitting}>
-              {submitting ? "Submitting..." : "Submit"}
-            </button>
-          </div>
+          )}
+          <button type="submit" disabled={submitting} style={{ gridColumn: "1 / -1" }}>
+            {submitting ? "Placing..." : `${side} ${id}`}
+          </button>
         </form>
       </div>
     </div>

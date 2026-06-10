@@ -14,7 +14,7 @@ const Header = () => {
         body: { refreshToken: auth.refresh },
       });
     } catch {
-      // Ignore — best-effort revoke. Local clear below always runs.
+      // Best-effort revoke.
     }
     auth.clear();
     navigate("/login");
@@ -24,11 +24,16 @@ const Header = () => {
     <div className="header">
       <h1 className="logo">
         <Link to="/">TradeX</Link>
+        <span style={{ fontSize: 11, color: "#888", marginLeft: 6 }}>IN paper trading</span>
       </h1>
       <ul>
-        <li>{user ? <Link to="/dashboard">Dashboard</Link> : null}</li>
-        <li>{user ? <Link to="/portfolio">Portfolio</Link> : null}</li>
-        <li>{user ? <Link to="/orders">Orders</Link> : null}</li>
+        {user && <li><Link to="/dashboard">Dashboard</Link></li>}
+        {user && <li><Link to="/portfolio">Portfolio</Link></li>}
+        {user && <li><Link to="/orders">Orders</Link></li>}
+        {user && <li><Link to="/allocation">Allocation</Link></li>}
+        {user && <li><Link to="/heatmap">Heatmap</Link></li>}
+        {user && <li><Link to="/ipo">IPO</Link></li>}
+        {user && <li><Link to="/profile">Profile</Link></li>}
         <li>
           {user ? (
             <Link to="/login" onClick={logout}>Log out</Link>
@@ -36,7 +41,18 @@ const Header = () => {
             <Link to="/login">Login</Link>
           )}
         </li>
-        <li>{user ? user.username : <Link to="/signup">SignUp</Link>}</li>
+        <li>
+          {user ? (
+            <Link to="/profile" className="header-user">
+              {user.photoUrl ? (
+                <img src={user.photoUrl} alt="" className="avatar" />
+              ) : null}
+              {user.displayName || user.username}
+            </Link>
+          ) : (
+            <Link to="/signup">SignUp</Link>
+          )}
+        </li>
       </ul>
     </div>
   );

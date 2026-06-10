@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { api } from "../lib/api";
+import { api, formatINR } from "../lib/api";
 
 const AddFund = () => {
+  const [capital, setCapital] = useState(null);
   const [amount, setAmount] = useState("");
-  const [balance, setBalance] = useState(0);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const load = async () => {
     try {
       const data = await api("/funds");
-      setBalance(data.fund || 0);
+      setCapital(data.capital);
     } catch (err) {
       setError(err.message);
     }
@@ -20,19 +20,16 @@ const AddFund = () => {
     load();
   }, []);
 
-  const handleSubmit = async (e) => {
+  const deposit = async (e) => {
     e.preventDefault();
     setError("");
     const n = Number(amount);
-    if (!Number.isFinite(n) || n <= 0) {
-      setError("Enter a positive amount");
-      return;
-    }
+    if (!Number.isFinite(n) || n <= 0) return setError("Enter a positive amount");
     setSubmitting(true);
     try {
-      const data = await api("/funds", { method: "POST", body: { amount: n } });
-      setBalance(data.fund);
+      await api("/funds/deposit", { method: "POST", body: { amount: n } });
       setAmount("");
+      load();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -41,21 +38,29 @@ const AddFund = () => {
   };
 
   return (
-    <div className="account-balance">
-      <h3>Account Balance : ${Number(balance).toFixed(2)}</h3>
+    <div className="account-balance" style={{ background: "#fff", padding: 16, borderRadius: 6, border: "1px solid #eee" }}>
+      <h3>Virtual Capital</h3>
+      {capital && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 8, marginBottom: 12 }}>
+          <div>Starting Capital: <b>{formatINR(capital.startingCapital)}</b></div>
+          <div>Available Cash: <b>{formatINR(capital.availableCash)}</b></div>
+          <div>Invested: <b>{formatINR(capital.investedAmount)}</b></div>
+          <div>Realized P&L: <b style={{ color: capital.realizedPnL >= 0 ? "green" : "crimson" }}>{formatINR(capital.realizedPnL)}</b></div>
+        </div>
+      )}
       {error && <p style={{ color: "crimson" }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <label>Enter Amount</label>
+      <form onSubmit={deposit}>
+        <label>Top up virtual cash</label>
         <input
           type="number"
           min="0"
-          step="0.01"
+          step="100"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          placeholder="Enter amount"
+          placeholder="Amount in ₹"
         />
         <button type="submit" disabled={submitting}>
-          {submitting ? "Adding..." : "Add Fund"}
+          {submitting ? "Adding..." : "Add Funds"}
         </button>
       </form>
     </div>

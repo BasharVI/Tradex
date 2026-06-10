@@ -6,10 +6,18 @@ import Dashboard from "./pages/Dashboard";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
+import Onboarding from "./pages/Onboarding";
+import Profile from "./pages/Profile";
 import PrivateComponent from "./components/PrivateComponent";
 import Portfolio from "./components/Portfolio";
 import Orders from "./components/Orders";
 import Stocks from "./components/Stocks";
+import Allocation from "./components/Allocation";
+import Heatmap from "./components/Heatmap";
+import IPO from "./components/IPO";
 
 function App() {
   return (
@@ -18,14 +26,22 @@ function App() {
         <Header />
         <Routes>
           <Route element={<PrivateComponent />}>
-            <Route path="dashboard" element={<Dashboard />}></Route>
-            <Route path="Portfolio" element={<Portfolio />}></Route>
-            <Route path="orders" element={<Orders />}></Route>
-            <Route path="stock/:id" element={<Stocks />}></Route>
+            <Route path="onboarding" element={<Onboarding />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="portfolio" element={<Portfolio />} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="allocation" element={<Allocation />} />
+            <Route path="heatmap" element={<Heatmap />} />
+            <Route path="ipo" element={<IPO />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="stock/:id" element={<Stocks />} />
           </Route>
-          <Route exact path="/" element={<HomePage />}></Route>
-          <Route path="signup" element={<Signup />}></Route>
-          <Route path="login" element={<Login />}></Route>
+          <Route exact path="/" element={<HomePage />} />
+          <Route path="signup" element={<Signup />} />
+          <Route path="login" element={<Login />} />
+          <Route path="forgot-password" element={<ForgotPassword />} />
+          <Route path="reset-password" element={<ResetPassword />} />
+          <Route path="verify-email" element={<VerifyEmail />} />
         </Routes>
       </Router>
       <Footer />

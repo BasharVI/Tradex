@@ -1,11 +1,16 @@
 # TradeX
 TradeX is a full-stack web application that allows users to manage their stock portfolios, track their favorite stocks, and place orders to buy and sell stocks. The application was developed using React, Node.js,Express and MongoDB.
 ## Features
-- User authentication and authorization
+- Email + password, Google and Facebook sign-in with JWT access/refresh tokens
+- Email verification, password reset, account lockout, device-aware session list
+- 5-step onboarding (experience, goals, virtual capital, profile)
 - Watchlist management to track favorite stocks
 - Portfolio management to view and update current stock holdings
 - Order placement to buy and sell stocks
 - Order history to track past transactions
+
+For the full auth architecture, env-var setup, migration steps and testing
+strategy see [`docs/AUTHENTICATION.md`](docs/AUTHENTICATION.md).
 ## Getting Started
 To get started with TradeX, you will need to clone the repository and install the necessary dependencies.
 

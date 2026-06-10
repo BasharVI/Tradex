@@ -1,5 +1,11 @@
-// Thin fetch wrapper that injects the access token, auto-refreshes on 401,
-// and centralises error handling for the React app.
+// Thin fetch wrapper that injects the access token, auto-refreshes on 401
+// (via httpOnly refresh cookie + CSRF header) and centralises error handling.
+//
+// Storage strategy:
+//   - Access token: localStorage (short-lived, low XSS impact).
+//   - User snapshot: localStorage (display-only, never trusted by server).
+//   - Refresh token: httpOnly cookie (NOT readable from JS — defeats XSS exfiltration).
+//   - CSRF token: non-httpOnly cookie, value mirrored into x-csrf-token header.
 
 const API_BASE =
   process.env.REACT_APP_API_BASE || "http://localhost:5000/api";
@@ -7,8 +13,16 @@ const API_BASE =
 const STORAGE = {
   user: "tx_user",
   access: "tx_access",
-  refresh: "tx_refresh",
 };
+
+const CSRF_COOKIE = "tx_csrf";
+
+function readCookie(name) {
+  const match = document.cookie.match(
+    new RegExp("(?:^|; )" + name.replace(/[.$?*|{}()[\]\\/+^]/g, "\\$&") + "=([^;]*)")
+  );
+  return match ? decodeURIComponent(match[1]) : "";
+}
 
 export const auth = {
   get user() {
@@ -21,9 +35,7 @@ export const auth = {
   get access() {
     return localStorage.getItem(STORAGE.access);
   },
-  get refresh() {
-    return localStorage.getItem(STORAGE.refresh);
-  },
+  /** Persist a session response from /auth/* endpoints. */
   set(session) {
     if (!session) return;
     if (session.user) {
@@ -32,14 +44,14 @@ export const auth = {
     if (session.accessToken) {
       localStorage.setItem(STORAGE.access, session.accessToken);
     }
-    if (session.refreshToken) {
-      localStorage.setItem(STORAGE.refresh, session.refreshToken);
-    }
+  },
+  /** Update only the cached user record (after profile / onboarding edits). */
+  setUser(user) {
+    if (user) localStorage.setItem(STORAGE.user, JSON.stringify(user));
   },
   clear() {
     localStorage.removeItem(STORAGE.user);
     localStorage.removeItem(STORAGE.access);
-    localStorage.removeItem(STORAGE.refresh);
   },
 };
 
@@ -48,18 +60,20 @@ async function rawFetch(path, options = {}, withAuth = true) {
   if (withAuth && auth.access) {
     headers.Authorization = `Bearer ${auth.access}`;
   }
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
-  return res;
+  // Mirror the CSRF cookie into the header on every state-changing request.
+  // Safe to send on GETs too; the server only checks it where it matters.
+  const csrf = readCookie(CSRF_COOKIE);
+  if (csrf) headers["x-csrf-token"] = csrf;
+
+  return fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers,
+    credentials: "include",
+  });
 }
 
 async function tryRefresh() {
-  const refreshToken = auth.refresh;
-  if (!refreshToken) return false;
-  const res = await rawFetch(
-    "/auth/refresh",
-    { method: "POST", body: JSON.stringify({ refreshToken }) },
-    false
-  );
+  const res = await rawFetch("/auth/refresh", { method: "POST", body: "{}" }, false);
   if (!res.ok) {
     auth.clear();
     return false;
@@ -74,7 +88,7 @@ export async function api(path, { method = "GET", body, retry = true } = {}) {
   if (body !== undefined) opts.body = JSON.stringify(body);
 
   let res = await rawFetch(path, opts);
-  if (res.status === 401 && retry && auth.refresh) {
+  if (res.status === 401 && retry && auth.access) {
     const refreshed = await tryRefresh();
     if (refreshed) {
       res = await rawFetch(path, opts);
@@ -106,3 +120,12 @@ export async function api(path, { method = "GET", body, retry = true } = {}) {
 }
 
 export const API_BASE_URL = API_BASE;
+
+// Locale-aware INR formatter — Indian grouping (1,00,000 not 100,000).
+const inrFmt = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+  maximumFractionDigits: 2,
+});
+export const formatINR = (n) => inrFmt.format(Number(n || 0));
+export const formatPct = (n) => `${Number(n || 0).toFixed(2)}%`;

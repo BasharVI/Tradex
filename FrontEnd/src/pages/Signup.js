@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, auth } from "../lib/api";
+import SocialLogin from "../components/auth/SocialLogin";
 
 const Signup = () => {
   const [username, setUserName] = useState("");
@@ -13,6 +14,11 @@ const Signup = () => {
   useEffect(() => {
     if (auth.user && auth.access) navigate("/dashboard");
   }, [navigate]);
+
+  const handleSuccess = (data) => {
+    // Brand-new signups go straight into onboarding.
+    navigate("/onboarding");
+  };
 
   const collectData = async (e) => {
     e.preventDefault();
@@ -38,7 +44,7 @@ const Signup = () => {
         body: { username, email, password },
       });
       auth.set(data);
-      navigate("/dashboard");
+      handleSuccess(data);
     } catch (err) {
       setError(err.message || "Sign up failed");
     } finally {
@@ -47,40 +53,53 @@ const Signup = () => {
   };
 
   return (
-    <div className="signup-page">
-      <form onSubmit={collectData}>
-        <h3>Create new account</h3>
-        {error && <h5 style={{ color: "crimson" }}>{error}</h5>}
-        <label className="label" htmlFor="userName">User Name</label>
+    <div className="auth-page">
+      <form className="auth-card" onSubmit={collectData}>
+        <h3>Create your account</h3>
+        <p className="muted">Start paper trading with ₹10,00,000 virtual cash</p>
+        {error && <div className="error">{error}</div>}
+
+        <label className="label" htmlFor="userName">Full name</label>
         <input
           className="input"
+          id="userName"
           type="text"
-          placeholder="User Name"
+          autoComplete="name"
+          placeholder="Your name"
           value={username}
           onChange={(e) => setUserName(e.target.value)}
         />
+
         <label className="label" htmlFor="email">Email</label>
         <input
           className="input"
+          id="email"
           type="email"
-          placeholder="Email"
+          autoComplete="email"
+          placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+
         <label className="label" htmlFor="password">Password</label>
         <input
           className="input"
+          id="password"
           type="password"
-          placeholder="Password"
+          autoComplete="new-password"
+          placeholder="8+ chars, letters & digits"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button className="btn" type="submit" disabled={submitting}>
-          {submitting ? "Creating..." : "Sign Up"}
+
+        <button className="btn btn-primary" type="submit" disabled={submitting}>
+          {submitting ? "Creating account..." : "Create account"}
         </button>
-        <p>
-          Already have an account ? <br />
-          <Link to="/login">Login here</Link>
+
+        <SocialLogin onSuccess={handleSuccess} onError={setError} />
+
+        <p className="auth-footer">
+          Already have an account? <Link to="/login">Sign in</Link>
         </p>
       </form>
     </div>
