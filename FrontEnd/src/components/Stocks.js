@@ -1,40 +1,51 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Watchlist from "./Watchlist";
 import { api } from "../lib/api";
 
 const AV_KEY = process.env.REACT_APP_ALPHAVANTAGE_KEY || "";
 
 const Stocks = () => {
-  const [stockData, setStockData] = useState({ symbol: "", LTP: 0 });
+  const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Seed from router state if the caller passed a cached price (e.g. from the
+  // watchlist). Avoids a flash of $0 while the live fetch is in flight, and
+  // also gives us a sane fallback when Alphavantage rate-limits us.
+  const seededPrice = Number(location.state && location.state.price) || 0;
+
+  const [stockData, setStockData] = useState({ symbol: id, LTP: seededPrice });
   const [quantity, setQuantity] = useState("");
   const [buySell, setBuySell] = useState("buy");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const { id } = useParams();
-  const navigate = useNavigate();
 
   useEffect(() => {
+    if (!AV_KEY) return;
+    let cancelled = false;
     (async () => {
-      if (!AV_KEY) {
-        setStockData({ symbol: id, LTP: 0 });
-        return;
-      }
       try {
         const res = await fetch(
-          `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${encodeURIComponent(
+          `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${encodeURIComponent(
             id
-          )}&interval=5min&apikey=${AV_KEY}`
+          )}&apikey=${AV_KEY}`
         );
         const result = await res.json();
-        const series = Object.values(result)[1];
-        const first = series ? Object.values(series)[0] : null;
-        const LTP = first ? Number(first["4. close"]) : 0;
-        setStockData({ symbol: id, LTP });
+        const quote = result && result["Global Quote"];
+        const price = quote ? Number(quote["05. price"]) : 0;
+        // Only update on a real, positive price. A rate-limited or empty
+        // response must not clobber the seeded / previously fetched value.
+        if (!cancelled && Number.isFinite(price) && price > 0) {
+          setStockData({ symbol: id, LTP: price });
+        }
       } catch {
-        setStockData({ symbol: id, LTP: 0 });
+        // Swallow — keep whatever LTP we already have.
       }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   const handleSubmit = async (e) => {

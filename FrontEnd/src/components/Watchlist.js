@@ -7,13 +7,13 @@ import { api } from "../lib/api";
 // REACT_APP_ALPHAVANTAGE_KEY so it can at least be rotated without a rebuild.
 const AV_KEY = process.env.REACT_APP_ALPHAVANTAGE_KEY || "";
 
-const extractLatestPrice = (intradayResult) => {
+// Alphavantage's TIME_SERIES_INTRADAY moved to premium; GLOBAL_QUOTE is still
+// on the free tier and gives us the single LTP value we actually need.
+const extractLatestPrice = (quoteResult) => {
   try {
-    const series = Object.values(intradayResult)[1];
-    if (!series) return null;
-    const first = Object.values(series)[0];
-    if (!first) return null;
-    return Number(first["4. close"]);
+    const quote = quoteResult && quoteResult["Global Quote"];
+    const price = quote && Number(quote["05. price"]);
+    return Number.isFinite(price) && price > 0 ? price : null;
   } catch {
     return null;
   }
@@ -69,9 +69,9 @@ const Watchlist = () => {
     if (AV_KEY) {
       try {
         const res = await fetch(
-          `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${encodeURIComponent(
+          `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${encodeURIComponent(
             symbol
-          )}&interval=5min&apikey=${AV_KEY}`
+          )}&apikey=${AV_KEY}`
         );
         const result = await res.json();
         const latest = extractLatestPrice(result);
@@ -106,9 +106,10 @@ const Watchlist = () => {
     }
   };
 
-  const handleStockClick = (e) => {
-    const stock = e.target.innerText;
-    navigate(`/stock/${stock}`);
+  const handleStockClick = (symbol, price) => {
+    // Pass the cached price so the Stocks page can render immediately even if
+    // Alphavantage rate-limits the live fetch.
+    navigate(`/stock/${symbol}`, { state: { price } });
   };
 
   return (
@@ -134,7 +135,9 @@ const Watchlist = () => {
       {error && <p style={{ color: "crimson" }}>{error}</p>}
       {items.map((data, i) => (
         <div className="stock-list" key={data._id || i}>
-          <h4 onClick={handleStockClick}>{data.symbol}</h4>
+          <h4 onClick={() => handleStockClick(data.symbol, data.currentPrice)}>
+            {data.symbol}
+          </h4>
           <h4>${Number(data.currentPrice || 0).toFixed(2)}</h4>
           <button onClick={() => handleRemoveStock(data.symbol)}>-</button>
         </div>
