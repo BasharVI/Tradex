@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   BarChart3,
   Bot,
@@ -16,6 +16,7 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { auth, logout } from "@/lib/api";
 
 const nav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -28,6 +29,7 @@ const nav = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-background">
@@ -81,6 +83,33 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <span className="ml-2 font-semibold text-success numeric">+0.42%</span>
             </div>
             <ThemeToggle />
+          </div>
+          <div className="ml-3 flex items-center gap-3">
+            {/* user area */}
+            {auth.user ? (
+              <div className="hidden items-center gap-2 sm:flex">
+                <span className="text-sm font-medium text-muted-foreground">{(auth.user as any).displayName || (auth.user as any).username}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={async () => {
+                    await logout();
+                    router.push("/login");
+                  }}
+                >
+                  Log out
+                </Button>
+              </div>
+            ) : (
+              <div className="hidden items-center gap-2 sm:flex">
+                <Link href="/login" className="text-sm font-medium text-muted-foreground">
+                  Login
+                </Link>
+                <Link href="/signup" className="text-sm font-medium text-muted-foreground">
+                  Sign up
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </header>

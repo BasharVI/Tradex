@@ -7,7 +7,6 @@ export default defineConfig([
     ".next/**",
     "out/**",
     "build/**",
-    "legacy-src/**",
     "next-env.d.ts",
   ]),
 ]);
