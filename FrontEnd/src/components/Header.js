@@ -34,6 +34,7 @@ const Header = () => {
         {user && <li><Link to="/heatmap">Heatmap</Link></li>}
         {user && <li><Link to="/ipo">IPO</Link></li>}
         {user && <li><Link to="/growth">Growth Hub</Link></li>}
+        {user && <li><Link to="/coach">AI Coach</Link></li>}
         {user && <li><Link to="/profile">Profile</Link></li>}
         <li>
           {user ? (

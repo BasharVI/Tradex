@@ -19,6 +19,7 @@ import Allocation from "./components/Allocation";
 import Heatmap from "./components/Heatmap";
 import IPO from "./components/IPO";
 import GrowthHub from "./pages/GrowthHub";
+import AICoach from "./pages/AICoach";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="ipo" element={<IPO />} />
             <Route path="profile" element={<Profile />} />
             <Route path="growth" element={<GrowthHub />} />
+            <Route path="coach" element={<AICoach />} />
             <Route path="stock/:id" element={<Stocks />} />
           </Route>
           <Route exact path="/" element={<HomePage />} />

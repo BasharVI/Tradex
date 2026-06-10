@@ -80,6 +80,35 @@ module.exports = {
     url: process.env.REDIS_URL || process.env.REDIS_HOST || "redis://127.0.0.1:6379",
     ttl: num(process.env.REDIS_TTL_SECONDS, 60),
   },
+  ai: {
+    provider: (process.env.AI_PROVIDER || "mock").toLowerCase(),
+    apiKey: process.env.AI_API_KEY || "",
+    model: process.env.AI_MODEL || "",
+    openai: {
+      apiKey: process.env.OPENAI_API_KEY || "",
+      model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
+      baseUrl: process.env.OPENAI_BASE_URL || "https://api.openai.com/v1",
+    },
+    anthropic: {
+      apiKey: process.env.ANTHROPIC_API_KEY || "",
+      model: process.env.ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022",
+      baseUrl: process.env.ANTHROPIC_BASE_URL || "https://api.anthropic.com/v1",
+    },
+    gemini: {
+      apiKey: process.env.GEMINI_API_KEY || "",
+      model: process.env.GEMINI_MODEL || "gemini-1.5-pro",
+      baseUrl: process.env.GEMINI_BASE_URL || "https://generativelanguage.googleapis.com/v1beta",
+    },
+    cacheTtlSeconds: num(process.env.AI_CACHE_TTL_SECONDS, 60 * 60 * 24 * 7),
+    rateWindowSeconds: num(process.env.AI_RATE_WINDOW_SECONDS, 60 * 60),
+    tradeReviewLimit: num(process.env.AI_TRADE_REVIEW_LIMIT, 100),
+    portfolioReviewLimit: num(process.env.AI_PORTFOLIO_REVIEW_LIMIT, 40),
+    behaviorLimit: num(process.env.AI_BEHAVIOR_LIMIT, 20),
+    weeklyLimit: num(process.env.AI_WEEKLY_LIMIT, 10),
+    learningLimit: num(process.env.AI_LEARNING_LIMIT, 50),
+    batchSize: num(process.env.AI_BATCH_SIZE, 500),
+    weeklyEnabled: bool(process.env.AI_WEEKLY_ENABLED, false),
+  },
   // Market data provider selection and credentials
   market: {
     provider: process.env.MARKET_PROVIDER || "upstox",

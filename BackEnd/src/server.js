@@ -6,6 +6,8 @@ const { port } = require("./config/env");
 const { initRedis } = require("./services/redisClient");
 const StreamingService = require("./services/streaming.service");
 const { setNotificationServer } = require("./services/notification.service");
+const { reserveAiJob, completeAiJob, failAiJob } = require("./services/ai/queue.service");
+const { processAiJob, enqueueWeeklyReportsBatch } = require("./services/ai/ai.service");
 
 (async () => {
   try {
@@ -32,6 +34,39 @@ const { setNotificationServer } = require("./services/notification.service");
     // start streaming service
     const streaming = new StreamingService(io);
     streaming.start();
+
+    const aiWorkers = Math.max(1, Number(process.env.AI_WORKER_CONCURRENCY || 2));
+    for (let index = 0; index < aiWorkers; index += 1) {
+      (async function workerLoop() {
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const job = await reserveAiJob(5);
+          if (!job) continue;
+          try {
+            await processAiJob(job);
+            await completeAiJob(job);
+          } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error("[ai-worker] job failed:", err.message);
+            await failAiJob(job, true);
+          }
+        }
+      })().catch((err) => {
+        // eslint-disable-next-line no-console
+        console.error("[ai-worker] fatal:", err);
+      });
+    }
+
+    if (String(process.env.AI_WEEKLY_ENABLED || "false").toLowerCase() === "true") {
+      const intervalMs = Number(process.env.AI_WEEKLY_SCAN_MS || 6 * 60 * 60 * 1000);
+      const runBatch = () =>
+        enqueueWeeklyReportsBatch().catch((err) => {
+          // eslint-disable-next-line no-console
+          console.error("[ai-weekly] enqueue failed:", err.message);
+        });
+      setInterval(runBatch, intervalMs);
+      runBatch();
+    }
 
     server.listen(port, () => {
       // eslint-disable-next-line no-console
