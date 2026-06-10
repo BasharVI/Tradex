@@ -18,6 +18,7 @@ import Stocks from "./components/Stocks";
 import Allocation from "./components/Allocation";
 import Heatmap from "./components/Heatmap";
 import IPO from "./components/IPO";
+import GrowthHub from "./pages/GrowthHub";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
             <Route path="heatmap" element={<Heatmap />} />
             <Route path="ipo" element={<IPO />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="growth" element={<GrowthHub />} />
             <Route path="stock/:id" element={<Stocks />} />
           </Route>
           <Route exact path="/" element={<HomePage />} />
