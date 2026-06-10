@@ -1,30 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Watchlist from "./Watchlist";
+import { api } from "../lib/api";
+
+const fmt = (n) => Number(n || 0).toFixed(2);
 
 const Portfolio = () => {
-  const [details, setdetails] = useState([]);
+  const [items, setItems] = useState([]);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-
-  const userId = JSON.parse(localStorage.getItem("user"))._id;
 
   useEffect(() => {
     (async () => {
-      let result = await fetch(
-        `http://localhost:5000/portfolio?userId=${userId}`,
-        {
-          method: "get",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      result = await result.json();
-      const portfolio = result.portfolio;
-      setdetails(portfolio);
+      try {
+        const data = await api("/portfolio");
+        setItems(data.portfolio || []);
+      } catch (err) {
+        setError(err.message);
+      }
     })();
-  }, [userId]);
+  }, []);
 
-  // Redirect to stock page on click
-  const handleclick = (e) => {
+  const handleClick = (e) => {
     const stock = e.target.innerText;
     navigate(`/stock/${stock}`);
   };
@@ -34,27 +31,35 @@ const Portfolio = () => {
       <Watchlist />
       <div className="portfolio-details">
         <h2>Portfolio</h2>
+        {error && <p style={{ color: "crimson" }}>{error}</p>}
         <table>
           <thead>
             <tr>
               <th>Stock</th>
               <th>Quantity</th>
-              <th>Buy price</th>
+              <th>Avg. Buy Price</th>
               <th>LTP</th>
               <th>Profit/Loss</th>
             </tr>
           </thead>
           <tbody>
-            {details.length > 0 &&
-              details.map((data, i) => (
-                <tr key={i}>
-                  <td onClick={handleclick}>{data.stockName}</td>
+            {items.map((data, i) => {
+              const avg = data.averagePrice ?? data.boughtPrice ?? 0;
+              const ltp = data.currentPrice ?? avg;
+              const pnl = (ltp - avg) * data.quantity;
+              return (
+                <tr key={data._id || i}>
+                  <td onClick={handleClick}>{data.symbol || data.stockName}</td>
                   <td>{data.quantity}</td>
-                  <td>$ {data.boughtPrice}</td>
-                  <td>{data.boughtPrice}</td>
-                  <td>{Math.trunc(data.boughtPrice - data.boughtPrice)}</td>
+                  <td>$ {fmt(avg)}</td>
+                  <td>$ {fmt(ltp)}</td>
+                  <td style={{ color: pnl >= 0 ? "green" : "crimson" }}>
+                    {pnl >= 0 ? "+" : ""}
+                    {fmt(pnl)}
+                  </td>
                 </tr>
-              ))}
+              );
+            })}
           </tbody>
         </table>
       </div>

@@ -1,30 +1,28 @@
 import React, { useEffect, useState } from "react";
 import Watchlist from "./Watchlist";
+import { api } from "../lib/api";
 
 const Orders = () => {
-  const [details, setdetails] = useState([]);
-  const userId = JSON.parse(localStorage.getItem("user"))._id;
+  const [orders, setOrders] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     (async () => {
-      let result = await fetch(
-        `http://localhost:5000/orders?userId=${userId}`,
-        {
-          method: "get",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      result = await result.json();
-      const orders = result.orderHistory;
-      setdetails(orders);
+      try {
+        const data = await api("/orders");
+        setOrders(data.orderHistory || []);
+      } catch (err) {
+        setError(err.message);
+      }
     })();
-  });
+  }, []);
 
   return (
     <div className="orders">
       <Watchlist />
       <div className="orders-details">
         <h2>Orders</h2>
+        {error && <p style={{ color: "crimson" }}>{error}</p>}
         <table>
           <thead>
             <tr>
@@ -35,18 +33,16 @@ const Orders = () => {
               <th>Avg.Price</th>
             </tr>
           </thead>
-
           <tbody>
-            {details.length > 0 &&
-              details.map((order, i) => (
-                <tr key={i}>
-                  <td>{order.orderDate}</td>
-                  <td>{order.orderType}</td>
-                  <td>{order.stockName}</td>
-                  <td>{order.quantity}</td>
-                  <td>{order.orderPrice}</td>
-                </tr>
-              ))}
+            {orders.map((order, i) => (
+              <tr key={order._id || i}>
+                <td>{new Date(order.orderDate).toLocaleString()}</td>
+                <td>{order.orderType}</td>
+                <td>{order.symbol || order.stockName}</td>
+                <td>{order.quantity}</td>
+                <td>${Number(order.orderPrice || 0).toFixed(2)}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
